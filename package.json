@@ -24,8 +24,6 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@nuxtjs/auth-next": "^5.0.0-1667386184.dfbbb54",
-    "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/fontawesome": "^1.1.2",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
