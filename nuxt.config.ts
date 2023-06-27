@@ -1,8 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   modules: [
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
+    "@pinia-plugin-persistedstate/nuxt",
     "nuxt-quasar-ui",
     "@nuxtjs/google-fonts",
   ],
@@ -17,7 +19,7 @@ export default defineNuxtConfig({
 
   // Libs
   quasar: {
-    iconSet: "material-icons",
+    iconSet: "fontawesome-v6",
     config: {
       brand: {
         primary: "#626ee3",
@@ -35,7 +37,7 @@ export default defineNuxtConfig({
       },
     },
     extras: {
-      fontIcons: ["material-icons"],
+      fontIcons: ["material-icons", "mdi-v5", "fontawesome-v6"],
     },
   },
   googleFonts: {
@@ -47,6 +49,12 @@ export default defineNuxtConfig({
         wght: [100, 400],
         ital: [100],
       },
+    },
+  },
+  fontawesome: {
+    icons: {
+      solid: true,
+      brands: true,
     },
   },
 });

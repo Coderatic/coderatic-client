@@ -49,8 +49,8 @@
         />
         <div class="flex justify-center items-center">
           <q-btn
-            label="Submit"
-            type="submit"
+            label="Sign Up"
+            type="button"
             color="secondary"
             @click="signUp"
           />
@@ -90,27 +90,21 @@ const validation = {
     val === pass.value || "The passwords do not match",
 };
 
-const signUp = () => {
-  submitToServer()
-    .then((res) => {
-      console.log(res.data);
-      alert("Sent");
-      alert(res.data.value);
-    })
-    .catch((err) => {
-      alert(err);
+const signUp = async () => {
+  try {
+    alert("Signing up");
+    await useAPIFetch("/api/auth/pre-signup", {
+      method: "POST",
+      body: {
+        username: username.value,
+        email: email.value,
+        password: pass.value,
+      },
     });
-};
-
-const submitToServer = async () => {
-  return await useAPIFetch("/api/auth/pre-signup", {
-    method: "POST",
-    body: {
-      username: username.value,
-      email: email.value,
-      password: pass.value,
-    },
-  });
+  } catch (err) {
+    // TODO: Change this to use custom alert component
+    alert(err);
+  }
 };
 
 definePageMeta({
