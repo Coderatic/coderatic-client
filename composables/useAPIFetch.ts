@@ -1,9 +1,9 @@
-import { useFetch } from "#app"
+import { useFetch } from "#app";
 
-type useFetchType = typeof useFetch
+type useFetchType = typeof useFetch;
 
 export const useAPIFetch: useFetchType = (path, options = {}) => {
-  const config = useRuntimeConfig()
-  options.baseURL = config.public.APIBaseURL
-  return useFetch(path, options)
-}
+  const config = useRuntimeConfig();
+  options.baseURL = config.public.APIBaseURL;
+  return useFetch(path, options);
+};
