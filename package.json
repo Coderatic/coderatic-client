@@ -10,10 +10,13 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "^0.5.5",
+    "@nuxt/types": "^2.17.0",
     "@nuxtjs/google-fonts": "^3.0.1",
     "@nuxtjs/tailwindcss": "^6.7.0",
     "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
+    "@types/codemirror": "^5.60.8",
     "@types/cookie": "^0.5.1",
+    "@types/markdown-it": "^12.2.3",
     "@types/node": "^18",
     "autoprefixer": "^10.4.14",
     "nuxt": "^3.5.2",
@@ -22,17 +25,30 @@
     "tailwindcss": "^3.3.2"
   },
   "dependencies": {
+    "@codemirror/lang-cpp": "^6.0.2",
+    "@codemirror/state": "6.x",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
+    "@iktakahiro/markdown-it-katex": "^4.0.1",
+    "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/fontawesome": "^1.1.2",
+    "@nuxtjs/markdownit": "^2.0.0",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
+    "@uniob/markdown-it-katex": "^1.1.2-r2",
+    "codemirror": "^6.0.1",
     "cookie": "^0.5.0",
     "cookie-universal-nuxt": "^2.2.2",
+    "markdown-it": "^13.0.1",
+    "markdown-it-highlightjs": "^4.0.1",
+    "markdown-it-vue": "^1.1.7",
     "mdi-vue": "^3.0.13",
+    "nuxi": "^3.6.2",
     "nuxt-auth": "^2.0.10",
     "pinia": "^2.1.4",
-    "quasar": "^2.12.0"
+    "quasar": "^2.12.0",
+    "vue-codemirror": "^6.1.1"
   },
   "overrides": {
     "vue": "latest"
