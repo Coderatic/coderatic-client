@@ -1,21 +1,27 @@
-import { Cookies } from "quasar";
+import { useNitroFetch } from "~/composables/useNitroFetch.js";
 import { useUserStore } from "../store/auth.js";
-
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const userStore = useUserStore();
-  const res: any = await useAPIFetch(`/api/auth/verify-token`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${Cookies.get("token")}`,
-    },
-  }).catch((err) => {
-    alert(err);
-  });
-  if (res.status == 200 && res.data._rawValue.token) {
-    userStore.setToken(res.data._rawValue.token);
-    userStore.isLoggedIn = true;
-  } else {
+  if (userStore.isLoggedIn) return;
+  try {
+    const res: any = await useNitroFetch(`/api/token`, {
+      method: "POST",
+    });
+    if (!res) {
+      userStore.setToken(null);
+      userStore.isLoggedIn = false;
+      return;
+    }
+    if (res.token != null) {
+      userStore.setToken(res.token);
+      userStore.isLoggedIn = true;
+    } else {
+      userStore.setToken(null);
+      userStore.isLoggedIn = false;
+    }
+  } catch (err) {
     userStore.setToken(null);
     userStore.isLoggedIn = false;
+    alert(err);
   }
 });
