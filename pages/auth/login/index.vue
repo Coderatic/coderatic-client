@@ -55,7 +55,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
 const config = useRuntimeConfig();
 import { useUserStore } from "../../../store/auth.js";
 
@@ -94,17 +93,16 @@ const providers = [
 ];
 
 const logIn = async () => {
-  //const userStore = useUserStore();
-  //await userStore.logIn(username.value, password.value);
-  const res = await axios.post("local", {
-    username: username.value,
-    password: password.value,
-  });
+  const userStore = useUserStore();
+  await userStore.logIn(username.value, password.value);
+  if (userStore.isLoggedIn) {
+    navigateTo("/");
+  }
 };
 
 definePageMeta({
   layout: "empty",
-  middleware: ["guest"],
+  middleware: ["token-check", "guest"],
 });
 </script>
 
