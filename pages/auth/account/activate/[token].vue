@@ -5,18 +5,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from "~/store/auth";
 import { onMounted } from "vue";
 
-onMounted(() => {
+onMounted(async () => {
   const { token } = useRoute().params;
 
   if (token) {
     const userStore = useUserStore();
-    userStore.setToken(token);
+    userStore.setToken(token as string);
     userStore.activateAccount();
-    // Redirect the user to home page
     alert("Account activated");
     navigateTo("/");
   }
