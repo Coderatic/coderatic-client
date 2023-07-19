@@ -1,41 +1,47 @@
 import { defineStore } from "pinia";
 import { Cookies } from "quasar";
+import { useNitroFetch } from "~/composables/useNitroFetch";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    user: null,
+    user: null as Object | null,
     activationToken: null as string | null,
     isLoggedIn: false as boolean,
   }),
 
   actions: {
     async logIn(username: string, password: string) {
-      const res: any = await useAPIFetch(`/api/auth/signin`, {
-        method: "POST",
-        body: {
-          username: username,
-          password: password,
-        },
-      }).catch((err) => {
+      try {
+        const res: any = await useNitroFetch("/api/login", {
+          method: "POST",
+          body: {
+            username: username,
+            password: password,
+          },
+        });
+        const { token } = res;
+        if (token) {
+          const user = await res.user;
+          this.user = user;
+          this.isLoggedIn = true;
+          this.activationToken = token;
+        } else {
+          this.user = null;
+          this.isLoggedIn = false;
+          this.activationToken = null;
+        }
+      } catch (err) {
         alert(err);
-      });
-      const { token: res_token } = res.data._rawValue;
-      if (res_token) {
-        const user = await res.data._rawValue.user;
-        this.user = user;
-        this.isLoggedIn = true;
-        this.activationToken = res_token;
-        console.log("Cookie set");
-        
-      } else {
-        this.user = null;
-        this.isLoggedIn = false;
-        this.activationToken = null;
       }
     },
 
     setToken(token: string | null) {
       this.activationToken = token;
+      this.isLoggedIn = token ? true : false;
+    },
+
+    setUser(user: Object) {
+      this.user = user;
     },
 
     async activateAccount() {
@@ -47,6 +53,7 @@ export const useUserStore = defineStore("user", {
       }).catch((err) => {
         alert(err);
       });
+      //TODO: Fix this
       if (res.message) {
         alert(res.message);
       }
