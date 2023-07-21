@@ -5,7 +5,6 @@
       <q-form class="q-gutter-md">
         <q-input
           v-model="username"
-          filled
           unmasked-value
           label="Username *"
           hint="This should be unique"
@@ -14,7 +13,6 @@
         />
         <q-input
           v-model="email"
-          filled
           label="Email *"
           type="email"
           hint="It should previously have not been registered with"
@@ -26,7 +24,6 @@
         />
         <q-input
           v-model="pass"
-          filled
           label="Password *"
           type="password"
           hint="A password of length above 8 is recommended"
@@ -35,7 +32,6 @@
         />
         <q-input
           v-model="conf_pass"
-          filled
           label="Confirm Password *"
           type="password"
           hint="It should match with the password above"
@@ -101,9 +97,9 @@ const signUp = async () => {
         password: pass.value,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     // TODO: Change this to use custom alert component
-    alert(err);
+    notifyUser(err.message);
   }
 };
 
