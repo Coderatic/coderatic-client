@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   },
 
   quasar: {
-    iconSet: "fontawesome-v6",
+    iconSet: "mdi-v5",
     plugins: ["Notify"],
     config: {
       brand: {
@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       },
     },
     extras: {
-      fontIcons: ["material-icons", "mdi-v5", "fontawesome-v6"],
+      fontIcons: ["mdi-v5"],
     },
   },
   googleFonts: {
@@ -63,12 +63,6 @@ export default defineNuxtConfig({
         wght: [100, 400],
         ital: [100],
       },
-    },
-  },
-  fontawesome: {
-    icons: {
-      solid: true,
-      brands: true,
     },
   },
 });
