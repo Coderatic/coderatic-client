@@ -1,3 +1,4 @@
+import { isNativeError } from "util/types";
 import fetchAPI from "../utils/fetchAPI.js";
 
 export default defineEventHandler(async (event) => {
@@ -20,7 +21,8 @@ export default defineEventHandler(async (event) => {
       path: "/",
     });
     return res;
-  } catch (err) {
-    alert(err);
+  } catch (err: any) {
+    //console.log("login.post", err.data);
+    return new Response(err.data, { status: 401 });
   }
 });

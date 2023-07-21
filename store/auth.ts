@@ -12,16 +12,22 @@ export const useUserStore = defineStore("user", {
   actions: {
     async logIn(username: string, password: string) {
       try {
-        const res: any = await useNitroFetch("/api/login", {
+        const { data, error } = await useNitroFetch("/api/login", {
           method: "POST",
           body: {
             username: username,
             password: password,
           },
         });
-        const { token } = res;
+        console.log("data", data);
+        console.log("error", error);
+        if (error.value) {
+          console.log("error", error);
+          throw error.value;
+        }
+        const { token } = data.value;
         if (token) {
-          const user = await res.user;
+          const user = await data.value.user;
           this.user = user;
           this.isLoggedIn = true;
           this.activationToken = token;
@@ -30,8 +36,11 @@ export const useUserStore = defineStore("user", {
           this.isLoggedIn = false;
           this.activationToken = null;
         }
-      } catch (err) {
-        alert(err);
+      } catch (err: any) {
+        notifyUser({
+          type: "negative",
+          message: err.message,
+        });
       }
     },
 
@@ -45,17 +54,23 @@ export const useUserStore = defineStore("user", {
     },
 
     async activateAccount() {
-      const res: any = await useAPIFetch(`/api/auth/signup`, {
-        method: "POST",
-        params: {
-          token: this.activationToken,
-        },
-      }).catch((err) => {
-        alert(err);
-      });
-      //TODO: Fix this
-      if (res.message) {
-        alert(res.message);
+      try {
+        const { data, error } = await useAPIFetch(`/api/auth/signup`, {
+          method: "POST",
+          params: {
+            token: this.activationToken,
+          },
+        });
+        // @ts-ignore
+        data.value.user = this.user;
+        if (error.value) {
+          throw error.value;
+        }
+      } catch (err: any) {
+        notifyUser({
+          type: "negative",
+          message: err.data.message,
+        });
       }
     },
   },
