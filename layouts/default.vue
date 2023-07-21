@@ -6,7 +6,7 @@
           <q-btn flat no-caps label="Coderatic" class="text-xl"></q-btn>
           <q-space />
           <q-btn-toggle v-model="button" v-if="!sm" flat stretch no-caps toggle-color="" :options="options" />
-          <q-btn v-else flat no-caps icon="menu" @click="drawer = !drawer" />
+          <q-btn v-else flat no-caps icon="mdi-menu" @click="drawer = !drawer" />
           <q-drawer v-model="drawer" show-if-above :mini="miniState" @mouseover="miniState = false"
             @mouseout="miniState = true" bordered :class="'text-primary'">
             <q-list>
@@ -17,14 +17,16 @@
                 </q-item-section>
               </q-item>
               <q-item clickable v-ripple v-for="item in options" :key="item.label" :to="item.to">
-                <q-btn flat no-caps :icon="item.icon" :label="item.label" />
+                <q-btn flat no-caps :icon="item.icon_sm" :label="item.label" />
               </q-item>
             </q-list>
           </q-drawer>
         </q-toolbar>
       </q-header>
-      <q-page-container style="padding-left: 10px; padding-right: 15px">
-        <slot />
+      <q-page-container style="padding-left: 10px;">
+        <div class="h-[calc(100vh-52px)]">
+          <slot />
+        </div>
       </q-page-container>
     </q-layout>
   </div>
@@ -48,13 +50,13 @@ watch(
 
 let options = [
   {
-    icon: "emoji_events",
+    icon_sm: "emoji_events",
     label: "Contests",
     value: "Contests",
     to: "/contests",
   },
-  { icon: "assignment", label: "Problems", value: "Problems", to: "/problems" },
-  { icon: "info", label: "About", value: "About", to: "/about" },
+  { icon_sm: "assignment", label: "Problems", value: "Problems", to: "/problems" },
+  { icon_sm: "info", label: "About", value: "About", to: "/about" },
 ];
 </script>
 
