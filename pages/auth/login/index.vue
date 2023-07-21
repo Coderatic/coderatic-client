@@ -74,19 +74,19 @@ const validation = {
 const providers = [
   {
     name: "Google",
-    icon: "fab fa-google",
+    icon: "mdi-google",
     class: "google-btn",
     loginUrl: `${config.public.APIBaseURL}/api/oauth/google`,
   },
   {
     name: "GitHub",
-    icon: "fab fa-github",
+    icon: "mdi-github",
     color: "black",
     loginUrl: `${config.public.APIBaseURL}/api/oauth/github`,
   },
   {
     name: "Discord",
-    icon: "fab fa-discord",
+    icon: "mdi-discord",
     class: "discord-btn",
     loginUrl: `${config.public.APIBaseURL}/api/oauth/discord`,
   },
