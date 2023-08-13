@@ -1,67 +1,156 @@
 <template>
-  <div class="overflow-x-clip">
-    <q-layout>
-      <q-header class="bg-primary-btn" elevated>
-        <q-toolbar>
-          <q-btn flat no-caps label="Coderatic" class="text-xl"></q-btn>
-          <q-space />
-          <q-btn-toggle v-model="button" v-if="!sm" flat stretch no-caps toggle-color="" :options="options" />
-          <q-btn v-else flat no-caps icon="mdi-menu" @click="drawer = !drawer" />
-          <q-drawer v-model="drawer" show-if-above :mini="miniState" @mouseover="miniState = false"
-            @mouseout="miniState = true" bordered :class="'text-primary'">
-            <q-list>
-              <q-item>
-                <q-item-section>
-                  <q-item-label class="text-xl">Coderatic</q-item-label>
-                  <hr />
-                </q-item-section>
-              </q-item>
-              <q-item clickable v-ripple v-for="item in options" :key="item.label" :to="item.to">
-                <q-btn flat no-caps :icon="item.icon_sm" :label="item.label" />
-              </q-item>
-            </q-list>
-          </q-drawer>
-        </q-toolbar>
-      </q-header>
-      <q-page-container style="padding-left: 10px;">
-        <div class="h-[calc(100vh-52px)]">
-          <slot />
-        </div>
-      </q-page-container>
-    </q-layout>
-  </div>
+	<div class="overflow-x-clip">
+		<q-layout>
+			<q-header class="bg-primary-btn" elevated>
+				<q-toolbar>
+					<q-btn
+						flat
+						no-caps
+						label="Coderatic"
+						class="text-xl"
+					></q-btn>
+					<q-space />
+					<template v-if="!sm">
+						<q-btn-toggle
+							v-model="button"
+							flat
+							stretch
+							no-caps
+							toggle-color=""
+							:options="options"
+						/>
+						<template v-if="!userStore.isLoggedIn">
+							<q-btn
+								no-caps
+								label="Login"
+								color="accent"
+								:to="`/auth/login?redirect=${$route.fullPath}`"
+							/>
+							<span class="mx-2">or</span>
+							<q-btn
+								no-caps
+								label="Signup"
+								color="secondary"
+								:to="`/auth/signup?redirect=${$route.fullPath}`"
+							/>
+						</template>
+					</template>
+					<q-btn
+						v-else
+						flat
+						no-caps
+						icon="mdi-menu"
+						@click="drawer = !drawer"
+					/>
+					<q-drawer
+						v-model="drawer"
+						show-if-above
+						:mini="miniState"
+						@mouseover="miniState = false"
+						@mouseout="miniState = true"
+						bordered
+						:class="'text-primary'"
+					>
+						<q-list>
+							<q-item>
+								<q-item-section>
+									<q-item-label class="text-xl"
+										>Coderatic</q-item-label
+									>
+									<hr />
+								</q-item-section>
+							</q-item>
+							<q-item
+								clickable
+								v-ripple
+								v-for="item in options"
+								:key="item.label"
+								:to="item.to"
+							>
+								<q-btn
+									flat
+									no-caps
+									:icon="item.icon_sm"
+									:label="item.label"
+								/>
+							</q-item>
+							<template v-if="!userStore.isLoggedIn">
+								<q-item>
+									<q-btn
+										no-caps
+										flat
+										icon="mdi-login"
+										label="Login"
+										color="accent"
+										:to="`/auth/login?redirect=${$route.fullPath}`"
+									/>
+								</q-item>
+								<q-item>
+									<q-btn
+										no-caps
+										flat
+										icon="mdi-account-plus-outline"
+										label="Signup"
+										color="secondary"
+										:to="`/auth/signup?redirect=${$route.fullPath}`"
+									/>
+								</q-item>
+							</template>
+						</q-list>
+					</q-drawer>
+				</q-toolbar>
+			</q-header>
+			<q-page-container style="padding-left: 10px">
+				<div class="h-[calc(100vh-52px)]">
+					<slot />
+				</div>
+			</q-page-container>
+		</q-layout>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { useQuasar } from "quasar";
+import { useUserStore } from "../store/auth.js";
 const $q = useQuasar();
 
 const drawer = ref(false);
 const button = ref(false);
 const miniState = ref(true);
 const sm = ref($q.screen.width < 768);
+const userStore = useUserStore();
 
 watch(
-  () => $q.screen.width,
-  (width) => {
-    sm.value = width < 768;
-  }
+	() => $q.screen.width,
+	(width) => {
+		sm.value = width < 768;
+	}
 );
 
 let options = [
-  {
-    icon_sm: "emoji_events",
-    label: "Contests",
-    value: "Contests",
-    to: "/contests",
-  },
-  { icon_sm: "assignment", label: "Problems", value: "Problems", to: "/problems" },
-  { icon_sm: "info", label: "About", value: "About", to: "/about" },
+	{
+		icon_sm: "mdi-trophy-variant-outline",
+		label: "Contests",
+		value: "Contests",
+		to: "/contests",
+	},
+	{
+		icon_sm: "mdi-clipboard-account-outline",
+		label: "Problems",
+		value: "Problems",
+		to: "/problems",
+	},
+	{
+		icon_sm: "mdi-information-outline",
+		label: "About",
+		value: "About",
+		to: "/about",
+	},
 ];
 </script>
 
 <style scoped>
 #app {
-  font-family: "Lato", sans-serif;
+	font-family: "Lato", sans-serif;
 }
 </style>

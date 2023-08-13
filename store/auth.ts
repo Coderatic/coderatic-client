@@ -1,78 +1,89 @@
 import { defineStore } from "pinia";
+import { IUser, IAuthState } from "./types/auth.types";
 import { Cookies } from "quasar";
-import { useNitroFetch } from "~/composables/useNitroFetch";
 
 export const useUserStore = defineStore("user", {
-  state: () => ({
-    user: null as Object | null,
-    activationToken: null as string | null,
-    isLoggedIn: false as boolean,
-  }),
+	state: (): IAuthState => ({
+		user: null,
+		isLoggedIn: false,
+	}),
 
-  actions: {
-    async logIn(username: string, password: string) {
-      try {
-        const { data, error } = await useNitroFetch("/api/login", {
-          method: "POST",
-          body: {
-            username: username,
-            password: password,
-          },
-        });
-        console.log("data", data);
-        console.log("error", error);
-        if (error.value) {
-          console.log("error", error);
-          throw error.value;
-        }
-        const { token } = data.value;
-        if (token) {
-          const user = await data.value.user;
-          this.user = user;
-          this.isLoggedIn = true;
-          this.activationToken = token;
-        } else {
-          this.user = null;
-          this.isLoggedIn = false;
-          this.activationToken = null;
-        }
-      } catch (err: any) {
-        notifyUser({
-          type: "negative",
-          message: err.message,
-        });
-      }
-    },
+	actions: {
+		async logIn(username: string, password: string) {
+			try {
+				const result = await useAPIFetch("/api/auth/login", {
+					method: "POST",
+					body: {
+						username: username,
+						password: password,
+					},
+					credentials: "include",
+				});
+				const { user } = result;
+				this.storeSession(user);
+			} catch (err: any) {
+				this.deleteSession();
+				notifyUser({
+					type: "negative",
+					message: err.data.message,
+				});
+			}
+		},
 
-    setToken(token: string | null) {
-      this.activationToken = token;
-      this.isLoggedIn = token ? true : false;
-    },
+		async verifyToken() {
+			const route = useRoute();
+			try {
+				const result = await useAPIFetch(`/api/auth/verify-token`, {
+					method: "POST",
+					credentials: "include",
+				});
+				this.storeSession(result.user);
+			} catch (err: any) {
+				this.deleteSession();
+				await useAPIFetch(`/api/auth/logout`, {
+					method: "POST",
+					credentials: "include",
+				});
+				showDialog({
+					type: "warning",
+					title: "Session Expired",
+					message: "Your session has expired. Please log in again.",
+					confirmText: "Log In",
+					cancelText: "Dismiss",
+					onOk: async () => {
+						await navigateTo(
+							`/auth/login?redirect=${route.fullPath}`
+						);
+					},
+				});
+			}
+		},
 
-    setUser(user: Object) {
-      this.user = user;
-    },
+		storeSession(user: IUser) {
+			this.user = user;
+			this.isLoggedIn = true;
+		},
 
-    async activateAccount() {
-      try {
-        const { data, error } = await useAPIFetch(`/api/auth/signup`, {
-          method: "POST",
-          params: {
-            token: this.activationToken,
-          },
-        });
-        // @ts-ignore
-        data.value.user = this.user;
-        if (error.value) {
-          throw error.value;
-        }
-      } catch (err: any) {
-        notifyUser({
-          type: "negative",
-          message: err.data.message,
-        });
-      }
-    },
-  },
-  persist: true,
+		deleteSession() {
+			this.user = null;
+			this.isLoggedIn = false;
+		},
+
+		async activateAccount(presignup_token: string) {
+			try {
+				const result = await useAPIFetch(`/api/auth/signup`, {
+					method: "POST",
+					params: {
+						token: presignup_token,
+					},
+				});
+			} catch (err: any) {
+				notifyUser({
+					type: "negative",
+					message: err.data.message,
+				});
+			}
+		},
+	},
+	persist: true,
 });
