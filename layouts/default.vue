@@ -148,9 +148,3 @@ let options = [
 	},
 ];
 </script>
-
-<style scoped>
-#app {
-	font-family: "Lato", sans-serif;
-}
-</style>
