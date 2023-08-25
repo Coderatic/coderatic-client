@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { IUser, IAuthState } from "./types/auth.types";
-import { Cookies } from "quasar";
 
 export const useUserStore = defineStore("user", {
 	state: (): IAuthState => ({
