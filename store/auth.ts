@@ -25,13 +25,17 @@ export const useUserStore = defineStore("user", {
 				this.deleteSession();
 				notifyUser({
 					type: "negative",
-					message: err.data.message,
+					message: err.message,
 				});
 			}
 		},
 
 		async verifyToken() {
 			const route = useRoute();
+			if (!document.cookie.includes("token_set")) {
+				this.deleteSession();
+				return;
+			}
 			try {
 				const result = await useAPIFetch(`/api/auth/verify-token`, {
 					method: "POST",
@@ -40,10 +44,6 @@ export const useUserStore = defineStore("user", {
 				this.storeSession(result.user);
 			} catch (err: any) {
 				this.deleteSession();
-				await useAPIFetch(`/api/auth/logout`, {
-					method: "POST",
-					credentials: "include",
-				});
 				showDialog({
 					type: "warning",
 					title: "Session Expired",
@@ -64,7 +64,13 @@ export const useUserStore = defineStore("user", {
 			this.isLoggedIn = true;
 		},
 
-		deleteSession() {
+		async deleteSession() {
+			if (this.user) {
+				await useAPIFetch(`/api/auth/logout`, {
+					method: "POST",
+					credentials: "include",
+				});
+			}
 			this.user = null;
 			this.isLoggedIn = false;
 		},
