@@ -23,8 +23,9 @@ export default defineNuxtConfig({
 		"@nuxtjs/tailwindcss",
 		"@pinia/nuxt",
 		"@pinia-plugin-persistedstate/nuxt",
+		"@nuxtjs/color-mode",
 		"nuxt-quasar-ui",
-		"@nuxtjs/google-fonts",
+		//"@nuxtjs/google-fonts",
 	],
 
 	runtimeConfig: {
@@ -38,11 +39,12 @@ export default defineNuxtConfig({
 		iconSet: "mdi-v7",
 		plugins: ["Notify", "Dialog"],
 		config: {
+			dark: "auto",
 			brand: {
 				primary: "#626ee3",
 				secondary: "#e26a6a",
 				accent: "#47b89c",
-				dark: "#324466",
+				dark: "#161832",
 				positive: "#21BA45",
 				negative: "#e06060",
 				info: "#edc1bb",
@@ -58,15 +60,19 @@ export default defineNuxtConfig({
 			fontIcons: ["mdi-v7", "fontawesome-v6"],
 		},
 	},
-	googleFonts: {
-		families: {
-			Roboto: true,
-			"Josefin+Sans": true,
-			Lato: [100, 300],
-			Raleway: {
-				wght: [100, 400],
-				ital: [100],
-			},
-		},
+	// googleFonts: {
+	// 	families: {
+	// 		Roboto: true,
+	// 		"Josefin+Sans": true,
+	// 		Lato: [100, 300],
+	// 		Raleway: {
+	// 			wght: [100, 400],
+	// 			ital: [100],
+	// 		},
+	// 	},
+	// },
+	colorMode: {
+		preference: "system",
+		fallback: "light",
 	},
 });
