@@ -1,11 +1,10 @@
 <template>
 	<div class="flex justify-center items-center h-screen">
-		<div
-			class="max-w-md w-full p-5 drop-shadow-xl bg-dialog rounded-xl ml-4 mr-4"
+		<q-card
+			flat
+			class="max-w-md w-full p-5 drop-shadow-xl rounded-xl ml-4 mr-4"
 		>
-			<h1 class="text-3xl text-center mb-5 text-black mt-4 text-bold">
-				Sign Up
-			</h1>
+			<h1 class="text-3xl text-center mb-5 mt-4 text-bold">Sign Up</h1>
 			<q-form
 				@submit.prevent="signUp"
 				class="flex flex-row justify-center items-center"
@@ -92,7 +91,7 @@
 					/>
 				</div>
 			</q-form>
-		</div>
+		</q-card>
 	</div>
 </template>
 
