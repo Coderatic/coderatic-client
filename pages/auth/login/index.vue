@@ -1,11 +1,10 @@
 <template>
 	<div class="flex justify-center items-center h-screen">
-		<div
-			class="max-w-md w-full p-5 drop-shadow-xl bg-dialog rounded-xl ml-4 mr-4"
+		<q-card
+			class="max-w-md w-full p-5 rounded-xl ml-4 mr-4"
+			flat
 		>
-			<h1 class="text-3xl text-center mb-5 text-black mt-4 text-bold">
-				Login
-			</h1>
+			<h1 class="text-3xl text-center mb-5 mt-4 text-bold">Login</h1>
 			<q-form
 				@submit.prevent="logIn"
 				class="flex flex-row justify-center items-center"
@@ -60,7 +59,7 @@
 					/>
 				</div>
 			</q-form>
-		</div>
+		</q-card>
 	</div>
 </template>
 
@@ -107,7 +106,7 @@ const logIn = async () => {
 	const userStore = useUserStore();
 	await userStore.logIn(username.value, password.value);
 	if (userStore.isLoggedIn) {
-		navigateTo(route.query.redirect as string || "/");
+		navigateTo((route.query.redirect as string) || "/");
 	}
 };
 

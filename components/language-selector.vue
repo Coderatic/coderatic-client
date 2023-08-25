@@ -6,16 +6,16 @@
 					clickable
 					v-close-popup
 					v-for="lang in languages"
-					@click="changeLanguage(lang.name)"
+					@click="
+						$emit('update:modelValue', lang.name);
+						changeLanguage(lang.name);
+					"
 				>
 					<q-item-section>
 						<q-avatar :class="lang.icon" size="2rem" />
 					</q-item-section>
 					<q-item-section>
 						<q-item-label>{{ lang.name }}</q-item-label>
-						<q-item-label v-if="lang.version" :caption="true">{{
-							lang.version
-						}}</q-item-label>
 					</q-item-section>
 				</q-item>
 			</div>
@@ -24,45 +24,40 @@
 </template>
 
 <script setup lang="ts">
-const selected_lang = ref("C++");
+const selected_lang = ref("C++ 17");
 const languages = ref([
 	{ name: "C", icon: "devicon-c-plain colored" },
 	{
-		name: "C++",
+		name: "C++ 11",
 		icon: "devicon-cplusplus-plain colored",
-		version: "11",
 	},
 	{
-		name: "C++",
+		name: "C++ 17",
 		icon: "devicon-cplusplus-plain colored",
-		version: "17",
 	},
 	{
-		name: "C++",
+		name: "C++ 20",
 		icon: "devicon-cplusplus-plain colored",
-		version: "20",
 	},
 	{ name: "C#", icon: "devicon-csharp-plain colored" },
 	{ name: "Dart", icon: "devicon-dart-plain colored" },
 	{
-		name: "Go",
+		name: "Golang",
 		icon: "devicon-go-original-wordmark colored",
-		version: "1.20.6",
 	},
 	{ name: "Haskell", icon: "devicon-haskell-plain colored" },
-	{ name: "Java", icon: "devicon-java-plain colored", version: "JDK 11" },
+	{ name: "Java", icon: "devicon-java-plain colored" },
 	{
 		name: "JavaScript",
 		icon: "devicon-javascript-plain colored",
-		version: "Node.js",
 	},
 	{ name: "Julia", icon: "devicon-julia-plain" },
 	{ name: "Kotlin", icon: "devicon-kotlin-plain colored" },
 	{ name: "Lua", icon: "devicon-lua-plain colored" },
 	{ name: "Perl", icon: "devicon-perl-plain colored" },
 	{ name: "PHP", icon: "devicon-php-plain colored" },
-	{ name: "Python2", icon: "devicon-python-plain", version: "2.7.18" },
-	{ name: "Python", icon: "devicon-python-plain colored", version: "3.11.3" },
+	{ name: "Python2", icon: "devicon-python-plain" },
+	{ name: "Python", icon: "devicon-python-plain colored" },
 	{ name: "R", icon: "devicon-r-original colored" },
 	{ name: "Ruby", icon: "devicon-ruby-plain colored" },
 	{ name: "Rust", icon: "devicon-rust-plain colored" },
@@ -70,12 +65,12 @@ const languages = ref([
 	{
 		name: "Typescript",
 		icon: "devicon-typescript-plain colored",
-		version: "Node.js",
 	},
 	{ name: "Zig", icon: "devicon-zig-plain colored" },
 ]);
 
-defineEmits(["changeLanguage"]);
+defineEmits(["update:modelValue"]);
+defineProps(["modelValue"]);
 
 const changeLanguage = (newLang: string) => {
 	selected_lang.value = newLang;

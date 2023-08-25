@@ -1,22 +1,67 @@
 <template>
 	<q-table
-		ref="tableRef"
 		:title="props.title"
+		class="max-h-[400px]"
 		:rows="formattedTableData"
 		:columns="(columns as any)"
 		:loading="loading"
-		separator="cell"
+		separator="horizontal"
 		row-key="name"
-		@loaded="loading"
 		v-model:pagination="pagination"
+		flat
+		bordered
 		binary-state-sort
+		virtual-scroll
+		:table-header-class="
+			'sticky top-0 z-10 ' + ($q.dark.isActive ? 'bg-dark' : 'bg-white')
+		"
+		no-data-label="You haven't made any submissions for this problem"
 		@request="onRequest"
-	/>
+	>
+		<template v-slot:top>
+			<h4 class="q-table__title">
+				{{ props.title }}
+			</h4>
+			<q-space />
+			<q-btn
+				color="primary"
+				@click="
+					onRequest({
+						pagination,
+					})
+				"
+				icon="mdi-sync"
+				no-caps
+				rounded
+			/>
+		</template>
+		<template v-slot:loading>
+			<q-inner-loading showing color="primary" />
+		</template>
+		<template v-slot:body-cell-verdict="props">
+			<q-td :props="props">
+				<q-chip
+					:label="(props.value as string)"
+					:color="props.value === 'AC' ? 'positive' : 'negative'"
+					:icon="props.value === 'AC' ? 'mdi-check' : 'mdi-close'"
+				/>
+			</q-td>
+		</template>
+	</q-table>
 </template>
 
 <script setup lang="ts">
 import { date } from "quasar";
 const { formatDate } = date;
+
+//Utils
+const truncateString = (str: string, maxLength: number, ellipsis = "...") => {
+	if (str.length <= maxLength) {
+		return str;
+	} else {
+		return str.slice(0, maxLength - ellipsis.length) + ellipsis;
+	}
+};
 
 const props = defineProps({
 	title: {
@@ -51,7 +96,7 @@ const pagination = ref({
 	rowsNumber: 0,
 });
 
-//Non-reactive State
+//Immutable State
 const columns = [
 	{
 		name: "submission_id",
@@ -98,35 +143,20 @@ const columns = [
 		align: "left",
 		headerStyle: "font-weight: bold; font-size: 1.2em;",
 	},
-	{
-		name: "code_size",
-		label: "Code size",
-		field: "code_size",
-		align: "left",
-		headerStyle: "font-weight: bold; font-size: 1.2em;",
-	},
-];
+] as const;
 
 // Computed State
 const formattedTableData = computed(() => {
-	console.log("computed");
-	return submissions
-		.map((sub: Submission) => ({
-			...sub,
-			cpu_time: `${sub.cpu_time} ms`,
-			memory: `${sub.memory} KB`,
-			code_size: `${sub.code_size} B`,
-			submission_time: formatDate(
-				sub.submission_time as string,
-				"MMM DD, YYYY hh:mm:ss a"
-			),
-		}))
-		.sort((a, b) => {
-			return (
-				new Date(b.submission_time as string).getTime() -
-				new Date(a.submission_time as string).getTime()
-			);
-		});
+	return submissions.map((sub: Submission) => ({
+		...sub,
+		submission_id: truncateString(sub.submission_id as string, 10+3),
+		cpu_time: `${sub.cpu_time} ms`,
+		memory: `${sub.memory} KB`,
+		submission_time: formatDate(
+			sub.submission_time as string,
+			"MMM DD, YYYY hh:mm:ss a"
+		),
+	}));
 });
 
 // Utils
@@ -136,7 +166,7 @@ const fetchSubmissions = async (
 	sortBy: String
 ) => {
 	try {
-		const result = await useAPIFetch("/api/submission/mine", {
+		return await useAPIFetch("/api/submission/mine", {
 			method: "GET",
 			params: {
 				problem_id: props.problem_id,
@@ -146,7 +176,6 @@ const fetchSubmissions = async (
 			},
 			credentials: "include",
 		});
-		return result;
 	} catch (error: any) {
 		if (error.data === "Unauthorized") {
 			notifyUser({
@@ -173,10 +202,10 @@ const onRequest = async (props: any) => {
 	const startingRow = (page - 1) * rowsPerPage;
 
 	loading.value = true;
-	const result = await fetchSubmissions(startingRow, fetchCount, sortBy);
+	const res = await fetchSubmissions(startingRow, fetchCount, sortBy);
 
 	// Remove previous
-	submissions.splice(0, submissions.length, ...result.submissions);
+	submissions.splice(0, submissions.length, ...res.submissions);
 
 	// Update reactive pagination state
 	pagination.value.page = page;
@@ -186,6 +215,19 @@ const onRequest = async (props: any) => {
 
 	loading.value = false;
 };
+
+const insertNewSubmission = (submission: Submission) => {
+	if(submissions.length === 0)
+		return submissions.push(submission);
+	if (submissions[0].submission_id.toString() === submission.submission_id)
+		return;
+	submissions.pop();
+	submissions.unshift(submission);
+};
+
+defineExpose({
+	insertNewSubmission,
+});
 
 const result = await fetchSubmissions(0, pagination.value.rowsPerPage, "desc");
 submissions = result.submissions;

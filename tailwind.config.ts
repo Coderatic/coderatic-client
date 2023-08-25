@@ -7,10 +7,8 @@ module.exports = {
 		"./nuxt.config.{js,ts}",
 	],
 	theme: {
-		colors: {
-			white: "#FFFDFA",
-			black: "#1F1F1F",
-		},
+		darkSelector: ".dark-mode",
+		dark: "class",
 		extend: {
 			screens: {
 				sm: "360px",
@@ -19,13 +17,14 @@ module.exports = {
 				xl: "1280px",
 			},
 			colors: {
+				white: "#FFFDFA",
+				black: "#1F1F1F",
 				primary: "#626ee3",
 				secondary: "#e26a6a",
 				accent: "#47b89c",
 				dialog: "#f8fafc",
-
-				dark: "#324466",
-				"dark-page": "#212a3b",
+				dark: "#00001e",
+				"dark-page": "#161832",
 				positive: "#21BA45",
 				negative: "#C10015",
 				info: "#edc1bb",
@@ -33,5 +32,24 @@ module.exports = {
 			},
 		},
 	},
-	plugins: [],
+	variants: {
+		backgroundColor: [
+			"dark",
+			"dark-hover",
+			"dark-group-hover",
+			"dark-even",
+			"dark-odd",
+			"hover",
+			"responsive",
+		],
+		borderColor: [
+			"dark",
+			"dark-focus",
+			"dark-focus-within",
+			"hover",
+			"responsive",
+		],
+		textColor: ["dark", "dark-hover", "dark-active", "hover", "responsive"],
+	},
+	plugins: [require("tailwindcss-dark-mode")()],
 };
