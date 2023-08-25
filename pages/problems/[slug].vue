@@ -25,10 +25,12 @@
 						<q-chip
 							v-else
 							v-for="chip in chips"
-							:color="chip.color"
+							:color="
+								chip.color + ($q.dark.isActive ? '-5' : '-3')
+							"
 							class="mr-3 pt-2"
 						>
-							<q-avatar v-if="chip.icon" :icon="chip.icon" />
+							<q-avatar v-if="chip?.icon" :icon="chip?.icon" />
 							<span>{{ chip.label }}</span>
 						</q-chip>
 					</div>
@@ -177,9 +179,24 @@
 						</q-card-section>
 					</q-tab-panel>
 					<q-tab-panel name="submissions">
-						<submissions
-							:problem_id="(problem_data?.problem_id as string)"
-						/>
+						<q-card flat>
+							<q-card-section
+								v-if="new_submission || submission_processing"
+							>
+								<current-submission
+									:submission="new_submission"
+									:processing="submission_processing"
+									ref="current_submission"
+								/>
+							</q-card-section>
+							<q-card-section>
+								<submissions
+									:problem_id="(problem_data?.problem_id as string)"
+									title="Past Submissions"
+									ref="past_submissions"
+								/>
+							</q-card-section>
+						</q-card>
 					</q-tab-panel>
 				</q-tab-panels>
 			</q-card>
@@ -191,7 +208,7 @@
 			class="flex flex-col flex-grow max-h-full md:ml-3 md:mt-0 sm:mt-5 md:pr-[1px] sm:pr-3"
 		>
 			<div class="flex flex-row items-center justify-between w-full p-3">
-				<language-selector />
+				<language-selector v-model="lang" />
 				<q-btn
 					color="primary"
 					label="Upload"
@@ -225,12 +242,14 @@
 						color="secondary"
 						label="Submit"
 						no-caps
+						:disable="!code"
 						@click="Submit"
 					/>
 					<q-btn
 						icon="mdi-play"
 						color="primary"
 						label="Run on samples"
+						:disable="!code"
 						no-caps
 					/>
 				</div>
@@ -242,13 +261,13 @@
 <script setup lang="ts">
 import { Codemirror } from "vue-codemirror";
 import { cpp } from "@codemirror/lang-cpp";
+import { rust } from "@codemirror/lang-rust";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Dialog } from "quasar";
-import { useUserStore } from "../../store/auth.js";
 import uploadDialog from "../../components/upload-dialog.vue";
+import Submissions from "../../components/submissions.vue";
 const config = useRuntimeConfig();
 const route = useRoute();
-const userStore = useUserStore();
 
 //Interfaces
 interface SampleTests {
@@ -268,6 +287,15 @@ interface Problem {
 	difficulty: "Easy" | "Medium" | "Hard" | null | undefined;
 	sample_tests: SampleTests[] | null;
 }
+interface Submission {
+	submission_id: String;
+	submission_time: String;
+	lang: String;
+	verdict: String;
+	cpu_time: String;
+	memory: String;
+	code_size: String;
+}
 
 //Utils
 const difficultyColor = (
@@ -275,13 +303,13 @@ const difficultyColor = (
 ): string => {
 	switch (difficulty) {
 		case "Easy":
-			return "blue-3";
+			return "blue";
 		case "Medium":
-			return "orange-3";
+			return "orange";
 		case "Hard":
-			return "red-3";
+			return "red";
 		default:
-			return "grey-4";
+			return "grey";
 	}
 };
 
@@ -300,26 +328,30 @@ const getRandomNumberInRange = (a: number, b: number): number => {
 
 //Reactive
 const code = ref("");
-const extensions = [cpp(), oneDark];
+const lang = ref("C++ 17");
+const extensions = [cpp(), rust(), oneDark];
 const problem_data = ref<Problem>();
 const chips = reactive({
 	difficulty: {
 		label: "",
-		icon: "mdi-star-outline",
+		icon: "",
 		color: "",
 	},
 	time: {
 		label: "",
 		icon: "mdi-timer-outline",
-		color: "orange-2",
+		color: "orange",
 	},
 	memory: {
 		label: "",
 		icon: "mdi-memory",
-		color: "red-2",
+		color: "red",
 	},
 });
 const active_tab = ref("statement");
+const new_submission = ref<Submission | null>(null);
+const past_submissions = ref<InstanceType<typeof Submissions> | null>(null);
+const submission_processing = ref(false);
 
 // Non-reactive state
 const tabs = [
@@ -337,23 +369,37 @@ const tabs = [
 
 const Submit = async () => {
 	try {
-		const result = await useAPIFetch("/api/submission/code", {
+		active_tab.value = "submissions";
+		if (new_submission.value) {
+			past_submissions.value?.insertNewSubmission(new_submission.value);
+			new_submission.value = null;
+		}
+		submission_processing.value = true;
+		const data = await useAPIFetch("/api/submission/code", {
 			method: "POST",
 			body: {
 				problem_id: problem_data.value?.problem_id,
-				user_id: userStore.user?.id,
-				lang: {
-					name: "cpp",
-					extension: "cpp",
-					is_compiled: true,
-				},
+				lang: { name: lang.value },
 				source_code: code.value,
 			},
 			credentials: "include",
 		});
-		console.log(result);
-	} catch (error) {
-		console.log(error);
+		new_submission.value = {
+			submission_id: data.submission_id,
+			submission_time: data.submission_time,
+			lang: data.lang,
+			verdict: data.result.verdict,
+			cpu_time: data.result.cpu_time,
+			memory: data.result.memory,
+			code_size: data.code_size,
+		};
+	} catch (error: any) {
+		notifyUser({
+			type: "negative",
+			message: error?.data?.error || "Something went wrong.",
+		});
+	} finally {
+		submission_processing.value = false;
 	}
 };
 
@@ -399,8 +445,8 @@ try {
 }
 
 definePageMeta({
-	title: "Problems",
-	description: "Problems",
+	title: "Problem",
+	description: "Competitive programming problem",
 	layout: "default",
 });
 </script>
