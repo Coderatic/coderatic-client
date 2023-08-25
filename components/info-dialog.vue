@@ -1,6 +1,6 @@
 <template>
 	<q-dialog ref="dialogRef" @hide="onDialogHide">
-		<q-card class="q-dialog-plugin">
+		<q-card class="q-dialog-plugin" flat>
 			<q-card-section class="flex flex-row mt-3">
 				<q-avatar
 					v-if="!props.plain"
