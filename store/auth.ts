@@ -7,6 +7,10 @@ export const useUserStore = defineStore("user", {
 		isLoggedIn: false,
 	}),
 
+	getters: {
+		profilePicture: (state) => state.user?.profile_picture || "./assets/user.png",
+	},
+
 	actions: {
 		async logIn(username: string, password: string) {
 			try {
@@ -21,7 +25,7 @@ export const useUserStore = defineStore("user", {
 				const { user } = result;
 				this.storeSession(user);
 			} catch (err: any) {
-				this.deleteSession();
+				this.logOut();
 				notifyUser({
 					type: "negative",
 					message: err.message,
@@ -32,7 +36,7 @@ export const useUserStore = defineStore("user", {
 		async verifyToken() {
 			const route = useRoute();
 			if (!document.cookie.includes("token_set")) {
-				this.deleteSession();
+				this.logOut();
 				return;
 			}
 			try {
@@ -42,7 +46,7 @@ export const useUserStore = defineStore("user", {
 				});
 				this.storeSession(result.user);
 			} catch (err: any) {
-				this.deleteSession();
+				this.logOut();
 				showDialog({
 					type: "warning",
 					title: "Session Expired",
@@ -63,7 +67,7 @@ export const useUserStore = defineStore("user", {
 			this.isLoggedIn = true;
 		},
 
-		async deleteSession() {
+		async logOut() {
 			if (this.user) {
 				await useAPIFetch(`/api/auth/logout`, {
 					method: "POST",
