@@ -8,6 +8,7 @@
 						no-caps
 						label="Coderatic"
 						class="text-xl"
+						:to="`/`"
 					></q-btn>
 					<q-space />
 					<template v-if="!sm">
@@ -16,10 +17,13 @@
 							flat
 							stretch
 							no-caps
-							toggle-color=""
+							toggle-text-color="yellow"
 							:options="options"
 						/>
-						<template v-if="!userStore.isLoggedIn">
+						<template v-if="userStore.isLoggedIn">
+							<profile-menu />
+						</template>
+						<template v-else>
 							<q-btn
 								no-caps
 								label="Login"
@@ -67,12 +71,14 @@
 								:key="item.label"
 								:to="item.to"
 							>
-								<q-btn
-									flat
-									no-caps
-									:icon="item.icon_sm"
-									:label="item.label"
-								/>
+								<q-item-section>
+									<q-btn
+										flat
+										no-caps
+										:icon="item.icon_sm"
+										:label="item.label"
+									/>
+								</q-item-section>
 							</q-item>
 							<template v-if="!userStore.isLoggedIn">
 								<q-item>
