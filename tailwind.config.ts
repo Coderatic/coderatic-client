@@ -8,7 +8,6 @@ module.exports = {
 	],
 	theme: {
 		darkSelector: ".dark-mode",
-		dark: "class",
 		extend: {
 			screens: {
 				sm: "360px",

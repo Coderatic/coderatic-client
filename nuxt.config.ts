@@ -1,3 +1,5 @@
+import { LocalStorage } from "quasar";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	ssr: false,
@@ -39,7 +41,7 @@ export default defineNuxtConfig({
 		iconSet: "mdi-v7",
 		plugins: ["Notify", "Dialog"],
 		config: {
-			dark: "auto",
+			dark: (LocalStorage.getItem("nuxt-color-mode") === "dark"),
 			brand: {
 				primary: "#626ee3",
 				secondary: "#e26a6a",
