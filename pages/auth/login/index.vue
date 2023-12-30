@@ -1,9 +1,6 @@
 <template>
 	<div class="flex justify-center items-center h-screen">
-		<q-card
-			class="max-w-md w-full p-5 rounded-xl ml-4 mr-4"
-			flat
-		>
+		<q-card class="max-w-md w-full p-5 rounded-xl ml-4 mr-4" flat>
 			<h1 class="text-3xl text-center mb-5 mt-4 text-bold">Login</h1>
 			<q-form
 				@submit.prevent="logIn"
